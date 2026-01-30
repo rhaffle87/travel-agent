@@ -21,8 +21,8 @@ const StatsCard = ({
           <h2 className="text-4xl font-semibold ">{total}</h2>
           <div className="flex items-center gap-2">
             <figure className="flex items-center gap-1">
-              <img 
-                src={`assets/icons/${isDecrement ? 'arrow-down-red.svg' : 'arrow-up-green.svg'}`} className="size-5" alt="trend arrow"
+              <img
+                src={`/assets/icons/${isDecrement ? 'arrow-down-red.svg' : 'arrow-up-green.svg'}`} className="size-5" alt="trend arrow"
               />
               <figcaption className={cn(`text-sm font-medium ${isDecrement ? 'text-red-500' : 'text-success-700'}`)}>
                 {Math.round(percentage)}%
