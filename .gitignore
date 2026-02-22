@@ -1,13 +1,9 @@
-# ===============================
 # Dependencies & Runtime
-# ===============================
 node_modules/
 .pnp
 .pnp.js
 
-# ===============================
 # React Router v7 & Vite
-# ===============================
 .react-router/
 build/
 dist/
@@ -16,40 +12,31 @@ dist/
 vite.config.ts.timestamp-*
 vite.config.js.timestamp-*
 
-# ===============================
 # Environment & Secrets (CRITICAL)
-# ===============================
 .env
 .env.local
 .env.*.local
 *.env
 .env.sentry-build-plugin
 
-# ===============================
 # Appwrite
-# ===============================
 .appwrite/
 
-# ===============================
 # Sentry
-# ===============================
 .sentryclirc
 
-# ===============================
 # IDE / Editor
-# ===============================
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# ===============================
 # OS
-# ===============================
 .DS_Store
 Thumbs.db
 
-# ===============================
 # Docker
-# ===============================
 .dockerignore
+
+#misc
+.hintrc

@@ -1,8 +1,7 @@
 import * as Sentry from "@sentry/react-router";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 Sentry.init({
-  dsn: "https://e10c3f4dbcc6cbd4888d34514428fbb0@o4510786937487360.ingest.de.sentry.io/4510786942730320",
-  tunnel: "/tunnel",
+  dsn: process.env.SENTRY_DSN,
   // Adds request headers and IP for users, for more info visit:
   // https://docs.sentry.io/platforms/javascript/guides/react-router/configuration/options/#sendDefaultPii
   sendDefaultPii: true,

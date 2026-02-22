@@ -27,7 +27,7 @@ const AllUsers = ({ loaderData }: Route.ComponentProps) => {
             textAlign="Left"
             template={(props: UserData) => (
               <div className="flex items-center gap-1.5 px-4">
-                  <img src={props.imageUrl} alt="user" className="rounded-full size-8 aspect-square" />
+                  <img src={props.imageUrl} alt="user" className="rounded-full size-8 aspect-square" referrerPolicy="no-referrer"/>
                   <span>{props.name}</span>
               </div>
             )}
