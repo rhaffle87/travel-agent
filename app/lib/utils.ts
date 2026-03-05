@@ -11,18 +11,82 @@ export const formatDate = (dateString: string): string => {
 };
 
 export function parseMarkdownToJson(markdownText: string): unknown | null {
-  const regex = /```json\n([\s\S]+?)\n```/;
-  const match = markdownText.match(regex);
+  if (!markdownText || typeof markdownText !== "string") {
+    return null;
+  }
 
-  if (match && match[1]) {
-    try {
-      return JSON.parse(match[1]);
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return null;
+  try {
+    const fencedRegex = /```(?:json)?\s*([\s\S]*?)\s*```/i;
+    const fencedMatch = markdownText.match(fencedRegex);
+
+    if (fencedMatch?.[1]) {
+      const cleaned = cleanJsonString(fencedMatch[1]);
+      return safeParse(cleaned);
+    }
+
+    const direct = cleanJsonString(markdownText.trim());
+    const directParsed = safeParse(direct);
+    if (directParsed) return directParsed;
+
+    const extracted = extractBalancedJson(markdownText);
+    if (extracted) {
+      const cleaned = cleanJsonString(extracted);
+      return safeParse(cleaned);
+    }
+
+    console.error("No valid JSON structure found.");
+    return null;
+
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
+    return null;
+  }
+}
+
+// Helper Functionn
+function safeParse(text: string): unknown | null {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function cleanJsonString(text: string): string {
+  let cleaned = text.trim();
+
+  cleaned = cleaned.replace(/,\s*([}\]])/g, "$1");
+
+  const openBraces = (cleaned.match(/{/g) || []).length;
+  const closeBraces = (cleaned.match(/}/g) || []).length;
+  const openBrackets = (cleaned.match(/\[/g) || []).length;
+  const closeBrackets = (cleaned.match(/\]/g) || []).length;
+
+  if (openBraces > closeBraces) {
+    cleaned += "}".repeat(openBraces - closeBraces);
+  }
+
+  if (openBrackets > closeBrackets) {
+    cleaned += "]".repeat(openBrackets - closeBrackets);
+  }
+
+  return cleaned;
+}
+
+function extractBalancedJson(text: string): string | null {
+  const start = text.indexOf("{");
+  if (start === -1) return null;
+
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === "{") depth++;
+    if (text[i] === "}") depth--;
+
+    if (depth === 0) {
+      return text.slice(start, i + 1);
     }
   }
-  console.error("No valid JSON found in markdown text.");
+
   return null;
 }
 
@@ -68,3 +132,17 @@ export const formatKey = (key: keyof TripFormData) => {
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase());
 };
+
+export function validateTrip(data: any, requestedDuration: number) {
+  if (!data) return false
+
+  if (data.duration !== requestedDuration) return false
+
+  if (!Array.isArray(data.itinerary)) return false
+
+  if (data.itinerary.length !== requestedDuration) return false
+
+  if (requestedDuration < 1 || requestedDuration > 10) return false
+
+  return true
+}

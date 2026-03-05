@@ -115,7 +115,7 @@ declare interface DashboardStats {
 }
 
 declare interface CreateTripResponse {
-  id?: string;
+  $id?: string;
 }
 
 declare interface DestinationProps {
