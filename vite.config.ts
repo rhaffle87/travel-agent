@@ -10,11 +10,22 @@ const sentryConfig: SentryReactRouterBuildOptions = {
   authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
 };
 
-export default defineConfig(config => {
+export default defineConfig((config) => {
   return {
-  plugins: [tailwindcss(), tsconfigPaths(), reactRouter(),sentryReactRouter(sentryConfig, config)],
-  ssr: { 
-    noExternal: [/@syncfusion/]
-  },
+    plugins: [
+      tailwindcss(),
+      tsconfigPaths(),
+      reactRouter(),
+      sentryReactRouter(sentryConfig, config),
+    ],
+
+    ssr: {
+      noExternal: [/@syncfusion/],
+    },
+
+    build: {
+      sourcemap: false,
+      chunkSizeWarningLimit: 1000,
+    },
   };
 });

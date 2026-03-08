@@ -1,7 +1,8 @@
 import { ID } from "appwrite";
 import { data, type ActionFunctionArgs } from "react-router";
 import { appwriteConfig, database } from "~/appwrite/client";
-import { parseMarkdownToJson } from "~/lib/utils";
+import { parseMarkdownToJson, parseTripData } from "~/lib/utils";
+import { createProduct } from "~/lib/stripe";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
     const {
@@ -143,6 +144,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         );
 
         const imageJson = await imageResponse.json();
+
         const imageUrls = (imageJson.results || [])
             .slice(0, 3)
             .map((result: any) => result.urls?.regular || null);
@@ -159,10 +161,28 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             }
         )
 
+        const tripDetail = parseTripData(result.tripDetails) as Trip;
+        const tripPrice = parseInt(tripDetail.estimatedPrice.replace('$', ''), 10)
+        const paymentLink = await createProduct(
+            tripDetail.name,
+            tripDetail.description,
+            imageUrls,
+            tripPrice,
+            result.$id
+        )
+
+        await database.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.tripsTableId,
+            result.$id,
+            {
+                payment_link: paymentLink.url
+            }
+        )
+
         console.log("Trip saved to database:", result.$id);
-
-        return data({ $id: result.$id });
-
+        return data({ $id: result.$id })
+        
     } catch (e: any) {
     console.error("Error generating travel plan:", e);
     throw new Response("Failed to generate trip", { status: 500 });

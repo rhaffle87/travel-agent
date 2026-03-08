@@ -4,15 +4,11 @@ import type { Route } from "./+types/create-trip"
 import { useRef, useState } from "react";
 import { comboBoxItems, selectItems } from "~/constants";
 import { cn, formatKey } from "~/lib/utils";
-import {
-  MapsComponent,
-  LayersDirective,
-  LayerDirective,
-} from "@syncfusion/ej2-react-maps"
+import { MapsComponent, LayersDirective, LayerDirective } from "@syncfusion/ej2-react-maps"
 import { world_map } from "~/constants/world_map";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
-import { account } from "~/appwrite/client";
 import { useNavigate } from "react-router";
+import { getCurrentUser } from "~/appwrite/auth";
 
 export const loader = async () => {
   const response = await fetch("https://restcountries.com/v3.1/all?fields=flags,name,latlng,maps");
@@ -70,10 +66,9 @@ const CreateTrip = ( { loaderData } : Route.ComponentProps) => {
       return;
     }
 
-    const user = await account.get();
-    if(!user.$id) {
-      console.error("User not authenticated");
-      setError("User not authenticated. Please log in to create a trip.");
+    const user = await getCurrentUser();
+    if(!user) {
+      setError("Session expired. Please log in again.");
       setLoading(false);
       return;
     }
